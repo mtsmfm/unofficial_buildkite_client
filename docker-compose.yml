@@ -1,0 +1,21 @@
+version: "3.7"
+services:
+  app: &app
+    build:
+      context: .
+      args:
+        ruby_version: 2.6.3
+    volumes:
+      - .:/app:cached
+      - vendor:/vendor
+      - home:/home/app
+      - $HOME/.gitconfig:/home/app/.gitconfig:ro
+      - $HOME/.ssh:/home/app/.ssh:ro
+      - $HOME/.gem:/home/app/.gem
+      - $HOME/.netrc:/home/app/.netrc
+    tty: true
+    stdin_open: true
+    env_file: app.env
+volumes:
+  vendor:
+  home:
