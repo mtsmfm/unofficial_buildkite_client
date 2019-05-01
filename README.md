@@ -1,8 +1,6 @@
 # UnofficialBuildkiteClient
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/unofficial_buildkite_client`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Unofficial [Buildkite](https://buildkite.com) API client.
 
 ## Installation
 
@@ -22,7 +20,16 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+ENV["BUILDKITE_ACCESS_TOKEN"] = "xxxxxxxxxxxxxxx"
+client = UnofficialBuildkiteClient.new(org_slug: "rails", pipeline_slug: "rails")
+# or
+# client = UnofficialBuildkiteClient.new(access_token: "xxxxxxxxxxxxxx", org_slug: "rails", pipeline_slug: "rails")
+builds = client.fetch_builds(created_at_from: "2019-04-19T07:00", first: 1, state: ["FAILED", "PASSED"])
+build = client.fetch_build(number: builds.first[:number])
+job = build[:jobs].first
+log = client.fetch_log(build_number: job[:build_number], job_id: job[:id])
+```
 
 ## Development
 
@@ -32,7 +39,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/unofficial_buildkite_client. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/mtsmfm/unofficial_buildkite_client. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 

@@ -6,9 +6,11 @@ require "unofficial_buildkite_client"
 # You can add fixtures and/or initialization code here to make experimenting
 # with your gem easier. You can also use a different console, if you like.
 
-# (If you use this, don't forget to add pry to your Gemfile!)
-# require "pry"
-# Pry.start
+client = UnofficialBuildkiteClient.new(org_slug: "rails", pipeline_slug: "rails")
+builds = client.fetch_builds(created_at_from: "2019-04-19T07:00", first: 1, state: ["FAILED", "PASSED"])
+build = client.fetch_build(number: builds.first[:number])
+job = build[:jobs].first
+log = client.fetch_log(build_number: job[:build_number], job_id: job[:id])
 
-require "irb"
-IRB.start(__FILE__)
+Bundler.require
+Pry.start
