@@ -1,12 +1,12 @@
 require "net/https"
 require "uri"
 require "json"
-require "logger"
 
 class UnofficialBuildkiteClient
   class JsonApiClient
-    def initialize(authorization_header: nil)
+    def initialize(authorization_header: nil, logger:)
       @authorization_header = authorization_header
+      @logger = logger
     end
 
     def request(method, url, params: nil)
@@ -39,6 +39,8 @@ class UnofficialBuildkiteClient
 
     private
 
+    attr_reader :logger
+
     def json_headers
       h = {
         "Content-Type" => "application/json",
@@ -46,10 +48,6 @@ class UnofficialBuildkiteClient
       }
       h.merge!("Authorization" => @authorization_header)
       h
-    end
-
-    def logger
-      UnofficialBuildkiteClient.logger
     end
   end
 end

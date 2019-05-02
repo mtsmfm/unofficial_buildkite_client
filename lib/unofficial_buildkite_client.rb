@@ -1,26 +1,15 @@
 require "unofficial_buildkite_client/version"
 require "unofficial_buildkite_client/json_api_client"
+require "logger"
 
 class UnofficialBuildkiteClient
   class Error < StandardError; end
 
-  class << self
-    def logger=(logger)
-      @logger = logger
-    end
-
-    def logger
-      @logger
-    end
-  end
-
-  self.logger = Logger.new(STDERR)
-
   GRAPHQL_ENDPOINT = "https://graphql.buildkite.com/v1"
   INTERNAL_API_HOST = "https://buildkite.com"
 
-  def initialize(access_token: ENV["BUILDKITE_ACCESS_TOKEN"], org_slug: nil, pipeline_slug: nil)
-    @client = JsonApiClient.new(authorization_header: "Bearer #{access_token}")
+  def initialize(access_token: ENV["BUILDKITE_ACCESS_TOKEN"], org_slug: nil, pipeline_slug: nil, logger: Logger.new(STDERR))
+    @client = JsonApiClient.new(authorization_header: "Bearer #{access_token}", logger: logger)
     @org_slug = org_slug
     @pipeline_slug = pipeline_slug
   end
