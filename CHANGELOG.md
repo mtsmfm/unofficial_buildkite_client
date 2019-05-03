@@ -1,3 +1,7 @@
+# 0.3.0
+
+- Make created_at_from and state option for fetch_build optional
+
 # 0.2.0
 
 - Client#initialize accepts logger option

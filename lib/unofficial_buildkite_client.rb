@@ -14,7 +14,7 @@ class UnofficialBuildkiteClient
     @pipeline_slug = pipeline_slug
   end
 
-  def fetch_builds(org_slug: @org_slug, pipeline_slug: @pipeline_slug, created_at_from:, first:, state:)
+  def fetch_builds(org_slug: @org_slug, pipeline_slug: @pipeline_slug, created_at_from: nil, first:, state: nil)
     variables = {slug: "#{org_slug}/#{pipeline_slug}", createdAtFrom: created_at_from, first: first, state: state}
 
     post_graphql(<<~GRAPHQL, variables: variables).dig(:data, :pipeline, :builds, :edges).map {|b| b[:node] }
