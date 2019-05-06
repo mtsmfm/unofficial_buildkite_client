@@ -11,6 +11,8 @@ builds = client.fetch_builds(created_at_from: "2019-04-19T07:00", first: 1, stat
 build = client.fetch_build(number: builds.first[:number])
 job = build[:jobs].first
 log = client.fetch_log(build_number: job[:build_number], job_id: job[:id])
+artifacts = client.fetch_artifacts(build_number: job[:build_number], job_id: job[:id])
+artifact = client.fetch_artifact(build_number: job[:build_number], job_id: job[:id], artifact_id: artifacts.first[:id])
 
 Bundler.require
 Pry.start

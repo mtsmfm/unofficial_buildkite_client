@@ -3,18 +3,18 @@ require "uri"
 require "json"
 
 class UnofficialBuildkiteClient
-  class JsonApiClient
+  class HttpClient
     def initialize(authorization_header: nil, logger:)
       @authorization_header = authorization_header
       @logger = logger
     end
 
-    def request(method, url, params: nil)
+    def request(method, url, params: nil, json: true, auth: true)
       uri = URI.parse(url)
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
 
-      logger.info("method: #{method}, url: #{url}, params: #{params.inspect}")
+      logger.info("method: #{method} url: #{url} params: #{params.inspect}")
 
       request =
       case method
@@ -29,12 +29,23 @@ class UnofficialBuildkiteClient
         raise NotImplementedError
       end
 
-      json_headers.each do |k, v|
-        request[k] = v
-      end
+      request["Content-Type"] = request["Accept"] = "application/json" if json
+      request["Authorization"] = @authorization_header if auth
+
       response = http.request(request)
-      raise Error.new("#{response.inspect}") unless response.code.start_with?("2")
-      JSON.parse(response.body, symbolize_names: true)
+
+      case response
+      when Net::HTTPSuccess
+        if json
+          JSON.parse(response.body, symbolize_names: true)
+        else
+          response.body
+        end
+      when Net::HTTPRedirection
+        request(:get, response["location"], json: json, auth: false)
+      else
+        response.error!
+      end
     end
 
     private
@@ -42,12 +53,10 @@ class UnofficialBuildkiteClient
     attr_reader :logger
 
     def json_headers
-      h = {
+      {
         "Content-Type" => "application/json",
         "Accept" => "application/json",
       }
-      h.merge!("Authorization" => @authorization_header)
-      h
     end
   end
 end

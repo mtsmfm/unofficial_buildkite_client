@@ -1,5 +1,5 @@
 require "unofficial_buildkite_client/version"
-require "unofficial_buildkite_client/json_api_client"
+require "unofficial_buildkite_client/http_client"
 require "logger"
 
 class UnofficialBuildkiteClient
@@ -9,7 +9,7 @@ class UnofficialBuildkiteClient
   INTERNAL_API_HOST = "https://buildkite.com"
 
   def initialize(access_token: ENV["BUILDKITE_ACCESS_TOKEN"], org_slug: nil, pipeline_slug: nil, logger: Logger.new(STDERR))
-    @client = JsonApiClient.new(authorization_header: "Bearer #{access_token}", logger: logger)
+    @client = HttpClient.new(authorization_header: "Bearer #{access_token}", logger: logger)
     @org_slug = org_slug
     @pipeline_slug = pipeline_slug
   end
@@ -54,6 +54,14 @@ class UnofficialBuildkiteClient
 
   def fetch_build(org_slug: @org_slug, pipeline_slug: @pipeline_slug, number:)
     @client.request(:get, "#{INTERNAL_API_HOST}/#{org_slug}/#{pipeline_slug}/builds/#{number}")
+  end
+
+  def fetch_artifacts(org_slug: @org_slug, pipeline_slug: @pipeline_slug, build_number:, job_id:)
+    @client.request(:get, "#{INTERNAL_API_HOST}/organizations/#{org_slug}/pipelines/#{pipeline_slug}/builds/#{build_number}/jobs/#{job_id}/artifacts")
+  end
+
+  def fetch_artifact(org_slug: @org_slug, pipeline_slug: @pipeline_slug, build_number:, job_id:, artifact_id:)
+    @client.request(:get, "#{INTERNAL_API_HOST}/organizations/#{org_slug}/pipelines/#{pipeline_slug}/builds/#{build_number}/jobs/#{job_id}/artifacts/#{artifact_id}", json: false)
   end
 
   def fetch_log(org_slug: @org_slug, pipeline_slug: @pipeline_slug, build_number:, job_id:)
