@@ -1,3 +1,7 @@
+# 0.5.0
+
+- Add last option for Client#fetch_builds
+
 # 0.4.0
 
 - Add Client#fetch_artifact and Client#fetch_artifacts
